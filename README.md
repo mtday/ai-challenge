@@ -3,7 +3,7 @@
 
 This document describes how to duplicate the creation of my submission.
 
-## Setup
+## Initial Setup
 
 Initialize the Jetson Nano device using the following procedures:
 
@@ -13,10 +13,40 @@ Initialize the Jetson Nano device using the following procedures:
 * Boot the device.
 * Follow the boot instructions (accept terms of use, configure locale, create user, connect to wifi, etc.).
 * Install an `~/.ssh/authorized_keys` file containing a public SSH key to allow passwordless SSH onto the device.
+* Add `~/.ssh/id_rsa` and `~/.ssh/id_rsa.pub` files for SSH off the device.
+
+## Update
+
 * The Ubuntu release that comes with the Jetson Nano developer kit image is slightly out-of-date. Updated it via these commands:
 
 ```
 sudo apt update -y && sudo apt upgrade -y
+```
+
+## Personal Setup
+
+Enable vi mode on the terminal command line:
+
+```
+echo 'set -o vi' >> ~/.bashrc
+```
+
+Use ctrl-l to clear the screen:
+
+```
+cat <<EOF > ~/.inputrc
+set editing-mode vi
+\$if mode=vi
+
+set keymap vi-command
+# these are for vi-command mode
+Control-l: clear-screen
+
+set keymap vi-insert
+# these are for vi-insert mode
+Control-l: clear-screen
+\$endif
+EOF
 ```
 
 ## Source Code
