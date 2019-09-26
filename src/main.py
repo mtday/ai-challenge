@@ -1,17 +1,13 @@
 
-from nexrad import NexradDownloader
-from datetime import datetime
+from nexrad_archive import NexradArchive
+from datetime import date
+from pathlib import Path
 
 
-class Main(object):
-    @staticmethod
-    def download_nexrad_images():
-        download_dir: str = '/tmp'
-        begin_time = datetime.strptime('2019-01-01 00:00', '%Y-%m-%d %H:%M')
-        end_time = datetime.strptime('2019-01-01 00:05', '%Y-%m-%d %H:%M')
-        NexradDownloader.download(download_dir, begin_time, end_time)
+archive_dir: Path = Path('/opt/nexrad-archive')
+station: str = 'KHTX'
+nexrad_archive: NexradArchive = NexradArchive(archive_dir, station)
 
-
-if __name__ == "__main__":
-    Main.download_nexrad_images()
+day = date(2019, 1, 1)
+nexrad_archive.download_day(day)
 
