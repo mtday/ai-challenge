@@ -25,6 +25,8 @@ Retrieve the source code from the repository on Github and initialize directory 
 
 ```
 cd /opt
+git config --global user.email "mday@eitccorp.com"
+git config --global user.name "mday"
 sudo git clone https://github.com/mtday/ai-challenge.git
 sudo mkdir nexrad-archive
 sudo chown mday ai-challenge
