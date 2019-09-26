@@ -1,53 +1,49 @@
 
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 from pathlib import Path
+import boto3
 import urllib.error
 import urllib.request
 
 
 class NexradArchive(object):
-    def __init__(self):
-        self.archive_dir: path = Path('/opt/nexrad-archive')
-        self.archive_dir.mkdir(parents=True, exist_ok=True)
+    def __init__(self, archive_dir: Path, station: str):
+        self.archive_dir: Path = archive_dir
+        self.station: str = station
+        self.bucket: str = 'noaa-nexrad-level2'
+        self.client = boto3.client('s3')
 
-    """
-    Delete all images in the archive.
-    """
-    def clear(self):
-        for image_file in self.archive_dir.iterdir():
-            image_file.delete()
+    def download_day(self, day: date):
+        prefix = f'{day.year}/{day.month:02d}/{day.day:02d}/{self.station}'
+        summaries: dict = self.client.list_objects_v2(
+            Bucket=self.bucket,
+            Prefix=prefix,
+            MaxKeys=200
+        )
 
-    """
-    Download a batch of images files from [begin_time, end_time] inclusive.
-    """
-    def download_batch(self, begin_time: datetime, end_time: datetime):
-        with ThreadPoolExecutor(max_workers=8) as executor:
-            time: datetime = begin_time
-            while time.timestamp() <= end_time.timestamp():
-                file_name: str = f'{time.year}{time.month:02d}{time.day:02d}{time.hour:02d}{time.minute:02d}.png'
-                output_file: path = self.archive_dir / file_name
-                executor.submit(self._download, output_file, time)
-                time += timedelta(minutes=5)
+        print(f'Key count: {summaries["KeyCount"]}')
+        if summaries['KeyCount'] > 0:
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                for summary in summaries['Contents']:
+                    key: str = summary['Key']
+                    if not key.endswith('_V06'):
+                        print(f'Skipping unrecognized key {key}')
+                        continue
+                    executor.submit(self._download, summary)
 
-    """
-    Downloads a single file from the online archive.
-    Example URL: https://mesonet.agron.iastate.edu/archive/data/2019/01/01/GIS/uscomp/n0q_201901010000.png
-    """
-    def _download(output_file: Path, time: datetime):
+    def _download(self, summary: dict):
+        key: str = summary['Key']
+        output_path: Path = self.archive_dir / key
+
         # if the file already exists, we don't attempt to download it again
-        if output_file.is_file():
-            print(f'{output_file} skipped, already exists locally')
-            return 0
-        day: str = f'{time.year}/{time.month:02d}/{time.day:02d}'
-        image: str = f'{time.year}{time.month:02d}{time.day:02d}{time.hour:02d}{time.minute:02d}.png'
-        url: str = f'https://mesonet.agron.iastate.edu/archive/data/{day}/GIS/uscomp/n0q_{image}'
-        try:
-            with urllib.request.urlopen(url) as response, output_file.open('wb') as out_file:
-                out_file.write(response.read())
-                print(f'{output_file} downloaded')
-                return 200
-        except urllib.error.HTTPError as error:
-            print(f'Failed: {url} => {error.code}')
-            return error.code
+        if output_path.is_file():
+            print(f'{output_path} skipped, already exists locally')
+
+        s3_object = self.client.get_object(
+            Bucket=self.bucket,
+            Key=key
+        )
+        with output_path.open('wb') as out_file:
+            out_file.write(s3_object.read())
 
