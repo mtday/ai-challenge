@@ -16,6 +16,14 @@ class NexradArchive(object):
         self.bucket: str = 'noaa-nexrad-level2'
         self.client = boto3.client('s3', config=Config(signature_version=UNSIGNED))
 
+    def get_paths(self) -> list:
+        #return [path for path in sorted(self.archive_dir.iterdir())]
+        return sorted(self.archive_dir.iterdir())
+
+    def clear(self) -> list:
+        for path in self.archive_dir.iterdir():
+            path.unlink()
+
     def download_day(self, day: date):
         prefix: str = f'{day.year}/{day.month:02d}/{day.day:02d}/{self.station}'
 
@@ -23,7 +31,7 @@ class NexradArchive(object):
         done: bool = False
         while not done:
             summaries: dict = self.client.list_objects_v2(
-                    Bucket=self.bucket, Prefix=prefix, StartAfter=key, MaxKeys=25)
+                    Bucket=self.bucket, Prefix=prefix, StartAfter=key, MaxKeys=100)
             if summaries['KeyCount'] > 0:
                 with ThreadPoolExecutor(max_workers=8) as executor:
                     for summary in summaries['Contents']:
@@ -46,4 +54,5 @@ class NexradArchive(object):
             with output_path.open('wb') as out_file:
                 out_file.write(s3_object['Body'].read())
             print(f'Downloaded {output_path}')
+
 

@@ -1,5 +1,5 @@
 
-# Alion Ai Challenge 2109
+# Alion Ai Challenge 2019
 
 This document describes how to duplicate the creation of my submission.
 
@@ -18,10 +18,11 @@ Initialize the Jetson Nano device using the following procedures:
 
 ## Update
 
-* The Ubuntu release that comes with the Jetson Nano developer kit image is slightly out-of-date. Updated it via these commands:
+The Ubuntu release that comes with the Jetson Nano developer kit image is slightly out-of-date. Updated it via these commands:
 
 ```
 sudo apt update -y && sudo apt upgrade -y
+sudo apt autoremove -y
 ```
 
 ## Software Installs
@@ -35,14 +36,12 @@ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2
 sudo update-alternatives --config python3  # pick 2
 sudo apt-get install -y python3-pip
-sudo apt-get install -y hdf5-tools
-sudo apt-get install -y hdf5-helpers
-```
-
-Install the necessary python modules:
-
-```
-pip3 install -r requirements.txt
+sudo apt-get install -y libhdf5-serial-dev
+sudo apt-get install -y netcdf-bin
+sudo apt-get install -y libnetcdf-dev
+sudo apt-get install -y libblas-dev
+sudo apt-get install -y liblapack-dev
+sudo apt-get install -y gfortran
 ```
 
 ## Personal Setup
@@ -91,5 +90,12 @@ The rest of this document will assume you are working out of the `ai-challenge` 
 cd ai-challenge
 ```
 
+## Python Module Install
+
+Install the necessary python modules. This will take a long time so plan accordingly.
+
+```
+pip3 install -r requirements.txt
+```
 
 
