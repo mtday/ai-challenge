@@ -14,6 +14,7 @@ Initialize the Jetson Nano device using the following procedures:
 * Follow the boot instructions (accept terms of use, configure locale, create user, connect to wifi, etc.).
 * Install an `~/.ssh/authorized_keys` file containing a public SSH key to allow passwordless SSH onto the device.
 * Add `~/.ssh/id_rsa` and `~/.ssh/id_rsa.pub` files for SSH off the device.
+* Add this line to `/etc/sudoers` to allow `sudo` without a password: `mday     ALL=(ALL) NOPASSWD:ALL`
 
 ## Update
 
@@ -29,6 +30,7 @@ Install additional required software packages:
 
 ```
 sudo apt-get install -y python3.7
+sudo apt-get install -y python3.7-dev
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2
 sudo update-alternatives --config python3  # pick 2
