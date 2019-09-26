@@ -23,6 +23,14 @@ Initialize the Jetson Nano device using the following procedures:
 sudo apt update -y && sudo apt upgrade -y
 ```
 
+## Fixes
+
+The device will automatically power down inactive USB peripherals. This will sometimes kill the wireless network connection. Disable the USB auto-suspend feature with this command:
+
+```
+sudo sed -i '$s/$/ usbcore.autosuspend=-1/' /boot/extlinux/extlinux.conf
+```
+
 ## Personal Setup
 
 Enable vi mode on the terminal command line:
