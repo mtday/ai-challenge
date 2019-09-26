@@ -23,12 +23,22 @@ Initialize the Jetson Nano device using the following procedures:
 sudo apt update -y && sudo apt upgrade -y
 ```
 
-## Fixes
+## Software Installs
 
-The device will automatically power down inactive USB peripherals. This will sometimes kill the wireless network connection. Disable the USB auto-suspend feature with this command:
+Install additional required software packages:
 
 ```
-sudo sed -i '$s/$/ usbcore.autosuspend=-1/' /boot/extlinux/extlinux.conf
+sudo apt-get install -y python3.7
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2
+sudo update-alternatives --config python3  # pick 2
+sudo apt-get install -y python3-pip
+```
+
+Install the necessary python modules:
+
+```
+pip3 install -r requirements.txt
 ```
 
 ## Personal Setup
