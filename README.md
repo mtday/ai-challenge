@@ -30,6 +30,7 @@ sudo apt autoremove -y
 Install additional required software packages:
 
 ```
+sudo apt-get install -y curl
 sudo apt-get install -y python3.7
 sudo apt-get install -y python3.7-dev
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
@@ -42,6 +43,7 @@ sudo apt-get install -y libnetcdf-dev
 sudo apt-get install -y libblas-dev
 sudo apt-get install -y liblapack-dev
 sudo apt-get install -y gfortran
+sudo apt-get install -y libfreetype6-dev
 ```
 
 ## Personal Setup
