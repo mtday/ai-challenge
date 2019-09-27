@@ -12,13 +12,14 @@ Initialize the Jetson Nano device using the following procedures:
 * Connect the necessary peripherals (keyboard, mouse, monitor, USB wifi).
 * Boot the device.
 * Follow the boot instructions (accept terms of use, configure locale, create user, connect to wifi, etc.).
-* Install an `~/.ssh/authorized_keys` file containing a public SSH key to allow passwordless SSH onto the device.
+* Install an `~/.ssh/authorized_keys` file containing a public SSH key to allow passwordless SSH into the device.
 * Add `~/.ssh/id_rsa` and `~/.ssh/id_rsa.pub` files for SSH off the device.
-* Add this line to `/etc/sudoers` to allow `sudo` without a password: `mday     ALL=(ALL) NOPASSWD:ALL`
+* Add `~/.gitconfig` for common git aliases and user info.
+* Add this line to `/etc/sudoers` to allow `sudo` without a password: `mday ALL=(ALL) NOPASSWD:ALL`
 
 ## Update
 
-The Ubuntu release that comes with the Jetson Nano developer kit image is slightly out-of-date. Updated it via these commands:
+The Ubuntu release that comes with the Jetson Nano developer kit image is slightly out-of-date. Update it via these commands:
 
 ```
 sudo apt update -y && sudo apt upgrade -y
@@ -30,60 +31,25 @@ sudo apt autoremove -y
 Install additional required software packages:
 
 ```
-sudo apt-get install -y curl
-sudo apt-get install -y python3.7
-sudo apt-get install -y python3.7-dev
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2
-sudo update-alternatives --config python3  # pick 2
 sudo apt-get install -y python3-pip
 sudo apt-get install -y libhdf5-serial-dev
-sudo apt-get install -y netcdf-bin
-sudo apt-get install -y libnetcdf-dev
-sudo apt-get install -y libblas-dev
-sudo apt-get install -y liblapack-dev
-sudo apt-get install -y gfortran
+sudo apt-get install -y netcdf-bin libnetcdf-dev
+sudo apt-get install -y libblas-dev liblapack-dev gfortran
 sudo apt-get install -y libfreetype6-dev
 ```
 
-## Personal Setup
-
-Enable vi mode on the terminal command line:
-
-```
-echo 'set -o vi' >> ~/.bashrc
-```
-
-Use ctrl-l to clear the screen:
-
-```
-cat <<EOF > ~/.inputrc
-set editing-mode vi
-\$if mode=vi
-
-set keymap vi-command
-# these are for vi-command mode
-Control-l: clear-screen
-
-set keymap vi-insert
-# these are for vi-insert mode
-Control-l: clear-screen
-\$endif
-EOF
-```
 
 ## Source Code
 
-Retrieve the source code from the repository on Github and initialize directory structures:
+Initialize directory structures and retrieve the source code from the repository on Github:
 
 ```
 cd /opt
-git config --global user.email "mday@eitccorp.com"
-git config --global user.name "mday"
-sudo git clone https://github.com/mtday/ai-challenge.git
+sudo mkdir ai-challenge
 sudo mkdir nexrad-archive
 sudo chown mday ai-challenge
 sudo chown mday nexrad-archive
+git clone git@github.com:mtday/ai-challenge.git
 ```
 
 The rest of this document will assume you are working out of the `ai-challenge` directory.
@@ -97,7 +63,8 @@ cd ai-challenge
 Install the necessary python modules. This will take a long time so plan accordingly.
 
 ```
-pip3 install -r requirements.txt
+pip3 install boto3==1.9.236 matplotlib==3.1.1 netCDF4==1.5.2 numpy==1.17.2 scipy==1.3.1 xarray==0.13.0
+pip3 install arm-pyart==1.10.2
 ```
 
 
